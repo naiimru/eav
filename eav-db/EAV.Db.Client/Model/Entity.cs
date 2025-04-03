@@ -70,11 +70,11 @@ public class Entity
 
     public long Id { get; set; }
 
-    public DateTime Created { get; set; }
+    public DateTime Created { get; set; } = DateTime.UtcNow;
 
-    public DateTime Updated { get; set; }
+    public DateTime? Updated { get; set; } = null;
 
-    public DateTime Deleted { get; set; }
+    public DateTime? Deleted { get; set; } = null;
 
     public string UId { get; set; }
 
@@ -97,6 +97,8 @@ public class Entity
 
     private EntityValues<DateTime> valuesDateTime = null;
 
+    protected internal bool ValuesDateTimeDirty => valuesDateTime != null;
+
     protected internal EntityValues<DateTime> ValuesDateTime
     {
         get
@@ -108,6 +110,8 @@ public class Entity
     }
 
     private EntityValues<int> valuesInt = null;
+
+    protected internal bool ValuesIntDirty => valuesInt != null;
 
     protected internal EntityValues<int> ValuesInt
     {
@@ -121,6 +125,8 @@ public class Entity
 
     private EntityValues<string> valuesString = null;
 
+    protected internal bool ValuesStringDirty => valuesString != null;
+
     protected internal EntityValues<string> ValuesString
     {
         get
@@ -132,6 +138,8 @@ public class Entity
     }
 
     private EntityValues<string> valuesText = null;
+
+    protected internal bool ValuesTextDirty => valuesText != null;
 
     protected internal EntityValues<string> ValuesText
     {

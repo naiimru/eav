@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace EAV.Db.Client;
 
-public class DbWriter : IDisposable
+public partial class DbWriter : IDisposable
 {
     DbClient client;
 
@@ -25,17 +25,18 @@ public class DbWriter : IDisposable
 
         if (entity.Id == 0)
         {
-            InsertEntity(entity, db);
+            InsertEntity(db, entity);
         }
         else
         {
-            UpdateEntity(entity, db);
+            entity.Updated = DateTime.UtcNow;
+            UpdateEntity(db, entity);
         }
 
         client.Commit();
     }
 
-    private void InsertEntity(Entity entity, IDbConnection db)
+    private void InsertEntity(IDbConnection db, Entity entity)
     {
         var sql = $"""
 
@@ -47,37 +48,44 @@ public class DbWriter : IDisposable
 
         entity.Id = db.QuerySingle<long>(sql, entity);
 
-        SetEntityValues(entity.Id, entity.ValuesDateTime!, db, "values_dt");
-        SetEntityValues(entity.Id, entity.ValuesInt!, db, "values_int");
-        SetEntityValues(entity.Id, entity.ValuesString!, db, "values_string");
-        SetEntityValues(entity.Id, entity.ValuesText!, db, "values_text");
+        SaveEntityValues(db, entity);
     }
 
-    private void UpdateEntity(Entity entity, IDbConnection db)
+    private void UpdateEntity(IDbConnection db, Entity entity)
     {
-        var sql =
-            @"
-            UPDATE grabs
-            SET source = @Source,
-                type = @Type,
-                d = @D,
-                t = @T,
-                uid = @Uid
-            WHERE id = @Id;";
+        var sql = $"""
+
+            UPDATE {entity.TableName}
+            SET updated = @Updated
+            WHERE id = @Id;
+            
+            """;
 
         db.Execute(sql, entity);
 
-        SetEntityValues(entity.Id, entity.ValuesDateTime!, db, "values_dt");
-        SetEntityValues(entity.Id, entity.ValuesInt!, db, "values_int");
-        SetEntityValues(entity.Id, entity.ValuesString!, db, "values_string");
-        SetEntityValues(entity.Id, entity.ValuesText!, db, "values_text");
+        SaveEntityValues(db, entity);
     }
 
-    public void SetEntityValues<T>(
-        long id,
-        IEnumerable<KeyValuePair<short, T>> values,
+    protected virtual void SaveEntityValues(IDbConnection db, Entity entity)
+    {
+        if (entity.ValuesDateTimeDirty)
+            SaveEntityValues(db, entity.ValuesDateTime.TableName, entity.Id, entity.ValuesDateTime);
+
+        if (entity.ValuesIntDirty)
+            SaveEntityValues(db, entity.ValuesInt.TableName, entity.Id, entity.ValuesInt);
+
+        if (entity.ValuesStringDirty)
+            SaveEntityValues(db, entity.ValuesString.TableName, entity.Id, entity.ValuesString);
+
+        if (entity.ValuesTextDirty)
+            SaveEntityValues(db, entity.ValuesText.TableName, entity.Id, entity.ValuesText);
+    }
+
+    public void SaveEntityValues<T>(
         IDbConnection db,
-        string table
+        string table,
+        long id,
+        IEnumerable<KeyValuePair<short, T>> values
     )
     {
         var selectQuery = $"SELECT aid FROM {table} WHERE id = @Id";
