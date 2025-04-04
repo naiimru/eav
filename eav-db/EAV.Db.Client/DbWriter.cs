@@ -16,7 +16,11 @@ public partial class DbWriter : IDisposable
 
     public void Dispose()
     {
-        client.Dispose();
+        if (client != null)
+        {
+            client.Dispose();
+            client = null;
+        }
     }
 
     public void Save(Entity entity)

@@ -24,8 +24,9 @@ public class DbReader : IDisposable
     public T LoadById<T>(long id)
         where T : Entity
     {
-        Entity.Register<T>();
-        string tableName = Entity.GetTableName<T>();
+        client.Registry.Register(typeof(T));
+
+        string tableName = client.Registry.GetTableName(typeof(T));
 
         using var db = client.Connect();
 

@@ -2,70 +2,12 @@
 
 public class Entity
 {
-    private static Dictionary<Type, string> tables = new();
-    private static Dictionary<(string, string), short> fields = new();
-
-    protected static void Register(Type type)
-    {
-        var attribute = (EntityTableAttribute)
-            Attribute.GetCustomAttribute(type, typeof(EntityTableAttribute));
-
-        if (attribute == null)
-        {
-            throw new InvalidOperationException(
-                $"The class {type.Name} does not have an EntityTable attribute."
-            );
-        }
-
-        var tableName = EntityTableAttribute.GetTableName(type);
-
-        if (tables.ContainsKey(type))
-            return;
-
-        tables.Add(type, tableName);
-
-        var props = type.GetProperties();
-
-        foreach (var prop in props)
-        {
-            var fieldIdAttribute = (EntityFieldAttribute)
-                Attribute.GetCustomAttribute(prop, typeof(EntityFieldAttribute));
-
-            if (fieldIdAttribute == null)
-                continue;
-
-            if (fields.ContainsKey((tableName, prop.Name)))
-            {
-                throw new InvalidOperationException(
-                    $"The field {prop.Name} has conflicting Field Id."
-                );
-            }
-
-            fields.Add((tableName, prop.Name), fieldIdAttribute.Id);
-        }
-    }
-
-    protected static void Register<T>()
-        where T : Entity
-    {
-        var type = typeof(T);
-        Register(type);
-    }
-
-    protected static string GetTableName(Entity entity)
-    {
-        return tables[entity.GetType()];
-    }
-
-    protected static short GetFieldId(Entity entity, string name)
-    {
-        var tableName = GetTableName(entity);
-        return fields[(tableName, name)];
-    }
+    private EntityRegistry registry;
 
     protected Entity()
     {
-        Register(this.GetType());
+        registry = EntityRegistry.Instance;
+        registry.Register(this.GetType());
     }
 
     public long Id { get; set; }
@@ -78,14 +20,16 @@ public class Entity
 
     public string UId { get; set; }
 
-    protected internal virtual string TableName
+    public EntityRegistry Registry => registry;
+
+    public virtual string TableName
     {
-        get { return GetTableName(this); }
+        get { return Registry.GetTableName(this.GetType()); }
     }
 
-    protected internal virtual short GetFieldId(string name)
+    public virtual short GetFieldId(string name)
     {
-        return GetFieldId(this, name);
+        return Registry.GetFieldId(this.GetType(), name);
     }
 
     protected internal virtual EntityValues<T> CreateValues<T>()
