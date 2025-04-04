@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<BaseOutputPath>..\..\.local\bin</BaseOutputPath>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentMigrator" Version="5.2.0" />
+		<PackageReference Include="FluentMigrator.Runner.Postgres" Version="5.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+		<PackageReference Include="Npgsql" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\EAV.Db.Client\EAV.Db.Client.csproj" />
+	  <ProjectReference Include="..\EAV.Db.Entities\EAV.Db.Entities.csproj" />
+	  <ProjectReference Include="..\EAV.Db.Migrations\EAV.Db.Migrations.csproj" />
+	</ItemGroup>
+
+</Project>

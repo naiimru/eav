@@ -25,7 +25,7 @@ public partial class DbWriter : IDisposable
 
     public void Save(Entity entity)
     {
-        using var db = client.Connect(true);
+        using var db = client.Connect();
 
         if (entity.Id == 0)
         {
@@ -36,8 +36,6 @@ public partial class DbWriter : IDisposable
             entity.Updated = DateTime.UtcNow;
             UpdateEntity(db, entity);
         }
-
-        client.Commit();
     }
 
     private void InsertEntity(IDbConnection db, Entity entity)
@@ -52,7 +50,7 @@ public partial class DbWriter : IDisposable
 
         entity.Id = db.QuerySingle<long>(sql, entity);
 
-        SaveEntityValues(db, entity);
+        //SaveEntityValues(db, entity);
     }
 
     private void UpdateEntity(IDbConnection db, Entity entity)
@@ -67,23 +65,23 @@ public partial class DbWriter : IDisposable
 
         db.Execute(sql, entity);
 
-        SaveEntityValues(db, entity);
+        //SaveEntityValues(db, entity);
     }
 
-    protected virtual void SaveEntityValues(IDbConnection db, Entity entity)
-    {
-        if (entity.ValuesDateTimeDirty)
-            SaveEntityValues(db, entity.ValuesDateTime.TableName, entity.Id, entity.ValuesDateTime);
+    //protected virtual void SaveEntityValues(IDbConnection db, Entity entity)
+    //{
+    //    if (entity.ValuesDateTimeDirty)
+    //        SaveEntityValues(db, entity.ValuesDateTime.TableName, entity.Id, entity.ValuesDateTime);
 
-        if (entity.ValuesIntDirty)
-            SaveEntityValues(db, entity.ValuesInt.TableName, entity.Id, entity.ValuesInt);
+    //    if (entity.ValuesIntDirty)
+    //        SaveEntityValues(db, entity.ValuesInt.TableName, entity.Id, entity.ValuesInt);
 
-        if (entity.ValuesStringDirty)
-            SaveEntityValues(db, entity.ValuesString.TableName, entity.Id, entity.ValuesString);
+    //    if (entity.ValuesStringDirty)
+    //        SaveEntityValues(db, entity.ValuesString.TableName, entity.Id, entity.ValuesString);
 
-        if (entity.ValuesTextDirty)
-            SaveEntityValues(db, entity.ValuesText.TableName, entity.Id, entity.ValuesText);
-    }
+    //    if (entity.ValuesTextDirty)
+    //        SaveEntityValues(db, entity.ValuesText.TableName, entity.Id, entity.ValuesText);
+    //}
 
     public void SaveEntityValues<T>(
         IDbConnection db,

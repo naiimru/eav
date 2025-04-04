@@ -33,6 +33,11 @@ public class DbReader : IDisposable
         string sql = $"SELECT * FROM {tableName} WHERE id = @Id";
         var entity = db.QueryFirstOrDefault<T>(sql, new { Id = id });
 
+        //foreach (var values in client.Registry.GetValues(typeof(T)))
+        //{
+        //    Console.WriteLine($"{tableName}_{values.Name}");
+        //}
+
         return entity;
     }
 }

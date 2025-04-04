@@ -5,12 +5,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<BaseOutputPath>..\..\.local\bin</BaseOutputPath>
-		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\EAV.Db.Client\EAV.Db.Client.csproj" />
-	  <ProjectReference Include="..\EAV.Db.Entities\EAV.Db.Entities.csproj" />
 	</ItemGroup>
 
 </Project>

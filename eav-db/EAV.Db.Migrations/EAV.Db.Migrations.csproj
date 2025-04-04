@@ -3,14 +3,16 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
 		<BaseOutputPath>..\..\.local\bin</BaseOutputPath>
-		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="FluentMigrator" Version="5.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\EAV.Db.Client\EAV.Db.Client.csproj" />
-	  <ProjectReference Include="..\EAV.Db.Entities\EAV.Db.Entities.csproj" />
 	</ItemGroup>
 
 </Project>
